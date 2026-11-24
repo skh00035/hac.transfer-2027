@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2027학년도 편입학 일정·모집인원</title>
+<style>
+:root{--ink:#17243a;--muted:#4c5e74;--line:#d7e1ed;--brand:#104b82;--wash:#f3f7fc;--paper:#fff}*{box-sizing:border-box}body{margin:0;background:var(--wash);font:15px/1.55 system-ui,'Malgun Gothic',sans-serif;color:var(--ink)}header{background:#112f50;color:white;padding:36px 20px 30px}header>div,main{max-width:1140px;margin:auto}header p{margin:5px 0;color:#dfebf8}.eyebrow{font-weight:750;letter-spacing:.1em}h1{font-size:clamp(26px,4vw,40px);margin:4px 0}main{padding:20px 16px 36px}nav,.bar,.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}nav{margin-bottom:12px}button,select,input{font:inherit;border:1px solid #9fadc0;border-radius:9px;padding:8px 12px;color:var(--ink);background:#fff}button{cursor:pointer}button[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:white}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #d88c22;outline-offset:2px}.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;margin-bottom:12px}h2{margin:0 0 3px}h3{margin:0}.sub,.small{color:var(--muted)}.sub{margin:4px 0 14px}.small{font-size:13px}.bar{gap:12px;margin:14px 0}.bar label{display:grid;gap:4px;font-weight:650}.bar select,.bar input{max-width:100%;font-weight:400}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.scroll{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;text-align:left}caption{text-align:left;padding:9px 12px;font-weight:750}th,td{padding:9px 12px;border-bottom:1px solid var(--line)}th{background:#eaf1fa}.cal{table-layout:fixed;min-width:665px}.cal th{text-align:center;padding:6px}.cal td{height:82px;vertical-align:top;border-right:1px solid var(--line);padding:5px}.cal td:last-child{border-right:0}.day{display:block;font-weight:700;margin-bottom:3px}.pad{background:#f6f8fb}.event{display:block;width:100%;margin:3px 0;padding:4px 5px;text-align:left;background:#e4f1ff;border:0;border-left:3px solid #2b6398;border-radius:5px;font-size:12px;overflow-wrap:anywhere}.event.k{background:#e2f5eb;border-left-color:#267350}.event strong{display:block}.agenda{list-style:none;margin:0;padding:0}.agenda li{padding:10px 0;border-bottom:1px solid var(--line)}.agenda li:last-child{border:0}.agenda p{margin:2px 0}.badge{display:inline-block;border-radius:999px;background:#e4f1ff;color:#1b4a7a;padding:1px 8px;margin-right:6px;font-size:13px}.badge.k{background:#e2f5eb;color:#235841}.notice{border-left:3px solid #5581aa;background:#f3f7fc;padding:9px 12px;margin:12px 0;color:#30465e}.quota{margin:16px 0}.quota table{min-width:510px}.qty{width:110px;white-space:nowrap;font-weight:700}dialog{width:min(540px,calc(100% - 30px));border:1px solid var(--line);border-radius:14px;padding:22px;color:var(--ink)}dialog::backdrop{background:#12263f88}dialog p{margin:8px 0}dialog form{margin-top:14px}footer{color:var(--muted);font-size:13px}summary{cursor:pointer;font-weight:650}[hidden]{display:none!important}@media(max-width:620px){.panel{padding:13px}.cal td{height:70px}.bar{align-items:stretch}.bar label{flex:1 1 140px}header{padding:25px 16px 20px}}
+</style></head><body>
+<header><div><p class="eyebrow">편입학 모집요강 한눈에 보기</p><h1>2027학년도 편입학</h1><p>대학별 전형일정, 모집단위별 선발인원, 전형방법을 확인하세요.</p></div></header>
+<main><nav aria-label="페이지 메뉴"><button type="button" id="tabCal" aria-pressed="true" aria-controls="schedule">전형일정</button><button type="button" id="tabQuota" aria-pressed="false" aria-controls="quota">대학별 전공 모집인원</button><button type="button" id="tabMethod" aria-pressed="false" aria-controls="method">전형방법</button></nav>
+<section class="panel" id="schedule"><h2>전형일정</h2><p class="sub">대학과 일정 항목을 선택하세요. 달력의 일정을 누르면 대상과 세부 시각을 볼 수 있습니다.</p>
+<div class="bar"><label>대학<select id="calSchool"></select></label><label>일정 항목<select id="calType"></select></label><label>보기 방식<select id="view"><option value="calendar">월간 달력</option><option value="monthList">월별 목록</option><option value="allList">전체 일정 목록</option></select></label><button type="button" id="clearCal">필터 초기화</button></div>
+<div class="toolbar"><h3 id="calHeading" aria-live="polite"></h3><div class="actions" id="monthButtons"><button type="button" id="prev" aria-label="이전 달">‹ 이전 달</button><button type="button" id="next" aria-label="다음 달">다음 달 ›</button><button type="button" id="first">첫 일정 달</button></div></div><div id="calBody"></div><p id="calNote" class="small" role="status"></p></section>
+<section class="panel" id="quota" hidden><h2>대학별 전공 모집인원</h2><p class="sub">대학을 먼저 선택하세요. 선택한 대학의 모집인원을 전형별로 확인하거나 학과·전공 이름으로 검색할 수 있습니다. 선발인원은 모집요강의 공식 모집단위 기준입니다.</p>
+<div class="bar"><label>대학<select id="quotaSchool"></select></label><label>전형<select id="track"></select></label><label>모집단위·전공 검색<input id="keyword" type="search" placeholder="예: 컴퓨터공학" autocomplete="off"></label><button type="button" id="clearQuota">필터 초기화</button></div><p id="quotaStatus" class="small" role="status"></p><div id="quotaBody"></div></section>
+<section class="panel" id="method" hidden aria-labelledby="methodHeading"><h2 id="methodHeading">전형방법</h2><p class="sub">대학을 먼저 선택하세요. 선택한 대학의 전형방법을 전형별로 확인할 수 있습니다.</p>
+<div class="bar"><label>대학<select id="methodSchool"></select></label><label>전형<select id="methodTrack"></select></label><button type="button" id="clearMethod">필터 초기화</button></div><p id="methodStatus" class="small" role="status"></p><div id="methodBody"></div></section>
+<footer class="panel"><details><summary>반영 자료와 확인 사항</summary><p id="version"></p><ul id="sources"></ul><p>이 페이지는 반영된 모집요강의 내용을 정리한 자료입니다. 지원 전 대학 입학처에서 정정 공지와 고사 세부 안내를 확인하세요.</p></details></footer></main>
+<dialog id="detail" aria-labelledby="detailTitle"><h3 id="detailTitle"></h3><div id="detailBody"></div><form method="dialog"><button autofocus>닫기</button></form></dialog>
+<!-- DATA:BEGIN -->
+<script id="kb-data" type="application/json">
+{
+  "updated": "2026-11-24",
+  "types": [
+    "원서접수 시작일",
+    "원서접수 마감일",
+    "필기고사일",
+    "면접고사일",
+    "1단계 합격자 발표일",
+    "최초합격자 발표일",
+    "서류제출 시작일",
+    "서류제출 마감일"
+  ],
+  "schools": {
+    "g": {
+      "name": "가천대학교",
+      "short": "가천대",
+      "file": "2027 가천대.pdf",
+      "refs": "PDF 4~5쪽, 10~25쪽",
+      "tracks": [
+        "일반편입학",
+        "학사편입학",
+        "농어촌",
+        "특성화고교",
+        "재외국민 및 외국인",
+        "의료인력 및 유치원교사",
+        "군위탁",
+        "우선선발(일반)",
+        "우선선발(학사)"
+      ],
+      "totals": [
+        442,
+        81,
+        11,
+        3,
+        12,
+        42
+      ],
+      "quotaRef": "PDF 4쪽, 10쪽, 13쪽, 15쪽, 17쪽, 19쪽, 21~22쪽",
+      "quotaNote": "우선선발은 일반·학사편입 모집인원에 포함되며 별도 정원이 아닙니다. 해당 모집단위 인원의 최대 30%(소수점 이하 버림)까지 선발합니다. 군위탁은 교육부 추천인원에 한해 모집합니다.",
+      "rows": [
+        [
+          "경영학과",
+          [
+            25,
+            6,
+            0,
+            1,
+            0,
+            0,
+            0,
+            "최대 30%",
+            "최대 30%"
+          ],
+          "",
+          "일반·학사 인원에 우선선발 포함"
+        ],
+        [
+          "회계세무학과",
+          [
+            5,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            "최대 30%"
+          ],
+          "",
+          "일반 인원에 우선선발 포함. 학사 세부전형 표상 우선선발 대상 아님"
+        ],
+        [
+          "관광경영학과",
+          [
+            5,
+            1
+          ]
+        ],
+        [
+          "의료산업경영학과",
+          [
+            3,
+            1
+          ]
+        ],
+        [
+          "금융수학전공",
+          [
+            10,
+            2
+          ]
+        ],
+        [
+          "빅데이터경영전공",
+          [
+            7,
+            2
+          ]
+        ],
+        [
+          "미디어커뮤니케이션학과",
+          [
+            8,
+            1
+          ]
+        ],
+        [
+          "경제학과",
+          [
+            10,
+            2,
+            1
+          ]
+        ],
+        [
+          "응용통계학과",
+          [
+            5,
+            1,
+            1
+          ]
+        ],
+        [
+          "사회복지학과",
+          [
+            2,
+            1,
+            1
+          ]
+        ],
+        [
+          "유아교육학과",
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            5
+          ]
+        ],
+        [
+          "심리학과",
+          [
+            9,
+            1
+          ]
+        ],
+        [
+          "패션산업학과",
+          [
+            8,
+            1
+          ]
+        ],
+        [
+          "한국어문학과",
+          [
+            14,
+            4
+          ]
+        ],
+        [
+          "영미어문학과",
+          [
+            14,
+            4
+          ]
+        ],
+        [
+          "법학과",
+          [
+            7,
+            2,
+            1
+          ]
+        ],
+        [
+          "경찰행정학과",
+          [
+            2,
+            1
+          ]
+        ],
+        [
+          "행정학과",
+          [
+            15,
+            2,
+            0,
+            1
+          ]
+        ],
+        [
+          "도시계획학전공",
+          [
+            7,
+            2
+          ]
+        ],
+        [
+          "조경학전공",
+          [
+            2
+          ]
+        ],
+        [
+          "건축공학전공",
+          [
+            11,
+            0,
+            0,
+            0,
+            2
+          ]
+        ],
+        [
+          "화공생명공학전공",
+          [
+            27,
+            3,
+            0,
+            1
+          ]
+        ],
+        [
+          "배터리공학전공",
+          [
+            14,
+            3
+          ]
+        ],
+        [
+          "기계공학전공",
+          [
+            20,
+            3
+          ]
+        ],
+        [
+          "설비·소방공학전공",
+          [
+            3,
+            2
+          ]
+        ],
+        [
+          "스마트팩토리전공",
+          [
+            12,
+            2
+          ]
+        ],
+        [
+          "토목환경공학과",
+          [
+            5,
+            1
+          ]
+        ],
+        [
+          "신소재공학과",
+          [
+            5,
+            1
+          ]
+        ],
+        [
+          "바이오나노학과",
+          [
+            5,
+            1
+          ]
+        ],
+        [
+          "식품생명공학과",
+          [
+            5,
+            1,
+            1
+          ]
+        ],
+        [
+          "식품영양학과",
+          [
+            6,
+            1
+          ]
+        ],
+        [
+          "생명과학과",
+          [
+            5,
+            1,
+            1
+          ]
+        ],
+        [
+          "반도체물리학과",
+          [
+            9,
+            1
+          ]
+        ],
+        [
+          "화학과",
+          [
+            6,
+            1,
+            1
+          ]
+        ],
+        [
+          "전자공학과",
+          [
+            25,
+            4,
+            0,
+            0,
+            1
+          ]
+        ],
+        [
+          "반도체공학과",
+          [
+            15,
+            4,
+            1,
+            0,
+            1
+          ]
+        ],
+        [
+          "시스템반도체학과",
+          [
+            2,
+            2
+          ]
+        ],
+        [
+          "인공지능학과",
+          [
+            26,
+            4,
+            0,
+            0,
+            1
+          ]
+        ],
+        [
+          "컴퓨터공학과",
+          [
+            15,
+            3,
+            0,
+            0,
+            1
+          ]
+        ],
+        [
+          "스마트보안학과",
+          [
+            6,
+            1
+          ]
+        ],
+        [
+          "전기공학과",
+          [
+            8,
+            2
+          ]
+        ],
+        [
+          "스마트시티학과",
+          [
+            7,
+            1
+          ]
+        ],
+        [
+          "의공학과",
+          [
+            10
+          ]
+        ],
+        [
+          "운동재활학과",
+          [
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
+        [
+          "시각디자인전공",
+          [
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
+        [
+          "바이오로직스학과",
+          [
+            22,
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
+        [
+          "간호학과",
+          [
+            5,
+            0,
+            1,
+            0,
+            1,
+            25
+          ],
+          "",
+          "전적대학 간호학과 전공자에 한함(재외국민 및 외국인 제외)"
+        ],
+        [
+          "치위생학과",
+          [
+            5,
+            1,
+            2,
+            0,
+            1,
+            4
+          ]
+        ],
+        [
+          "물리치료학과",
+          [
+            3,
+            1,
+            0,
+            0,
+            1,
+            4
+          ]
+        ],
+        [
+          "방사선학과",
+          [
+            2,
+            1,
+            0,
+            0,
+            0,
+            4
+          ]
+        ],
+        [
+          "모집단위별 인원 미표기",
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            "추천인원에 한함"
+          ]
+        ]
+      ]
+    },
+    "k": {
+      "name": "한국항공대학교",
+      "short": "한국항공대",
+      "file": "2027 항공대.pdf",
+      "refs": "PDF 6~7쪽, 11쪽, 17쪽",
+      "tracks": [
+        "일반편입학",
+        "학사편입학",
+        "농·어촌학생",
+        "특성화고교졸업자",
+        "재외국민",
+        "군위탁"
+      ],
+      "totals": [
+        87,
+        16,
+        1,
+        1,
+        2
+      ],
+      "quotaRef": "PDF 6쪽(책자 4쪽), 군위탁 범위 PDF 11쪽(책자 9쪽)",
+      "quotaNote": "전공명을 검색해도 인원은 해당 공식 모집단위 기준입니다. 학사편입의 모집단위별 숫자는 모집요강 표기 기준입니다. 자유전공학부 입학생은 전공 선택에 예외가 있으므로 원문을 확인하세요.",
+      "rows": [
+        [
+          "공과대학",
+          [
+            31,
+            4,
+            0,
+            0,
+            0,
+            "약간 명"
+          ],
+          "우주공학 전공 · 항공공학 전공 · 기계공학 전공 · 항공MRO 전공 · 우주항공 신소재 전공 · 반도체 신소재 전공"
+        ],
+        [
+          "AI융합대학",
+          [
+            22,
+            5,
+            0,
+            1,
+            0,
+            "약간 명"
+          ],
+          "인공지능 전공 · 컴퓨터공학 전공 · 반도체시스템 전공 · 전자 및 항공전자 전공 · AI융합 ICT 전공"
+        ],
+        [
+          "스마트드론공학과",
+          [
+            5,
+            1,
+            0,
+            0,
+            0,
+            "약간 명"
+          ]
+        ],
+        [
+          "AI자율주행시스템공학과",
+          [
+            1,
+            1,
+            0,
+            0,
+            0,
+            "약간 명"
+          ]
+        ],
+        [
+          "항공·경영대학",
+          [
+            13,
+            5,
+            1,
+            0,
+            2,
+            "약간 명"
+          ],
+          "항공교통 전공 · 물류 전공 · 경영 전공 · 항공경영 전공"
+        ],
+        [
+          "자유전공학부(공학적성)",
+          [
+            1
+          ]
+        ],
+        [
+          "자유전공학부(이학/사회적성)",
+          [
+            14
+          ]
+        ]
+      ]
+    }
+  },
+  "methods": {
+    "g": [
+      [
+        "일반편입학",
+        "경영학과, 회계세무학과, 관광경영학과, 의료산업경영학과, 미디어커뮤니케이션학과, 경제학과, 응용통계학과, 사회복지학과, 심리학과, 패션산업학과, 한국어문학과, 영미어문학과, 법학과, 경찰행정학과, 행정학과, 도시계획학전공, 조경학전공, 식품생명공학과, 식품영양학과, 간호학과, 치위생학과, 물리치료학과, 방사선학과",
+        "영어고사 100%",
+        "객관식 40문항. 간호학과는 전적대학 간호학과 전공자에 한함. 우선선발은 별도 기준 적용.",
+        "3·12"
+      ],
+      [
+        "일반편입학",
+        "금융수학전공, 빅데이터경영전공, 건축공학전공, 화공생명공학전공, 배터리공학전공, 기계공학전공, 설비·소방공학전공, 스마트팩토리전공, 토목환경공학과, 신소재공학과, 바이오나노학과, 생명과학과, 반도체물리학과, 화학과, 전자공학과, 반도체공학과, 시스템반도체학과, 인공지능학과, 컴퓨터공학과, 스마트보안학과, 전기공학과, 스마트시티학과, 의공학과, 바이오로직스학과",
+        "수학고사 100%",
+        "객관식 25문항",
+        "3·12"
+      ],
+      [
+        "학사편입학",
+        "경영학과, 회계세무학과, 관광경영학과, 의료산업경영학과, 미디어커뮤니케이션학과, 경제학과, 응용통계학과, 사회복지학과, 심리학과, 패션산업학과, 한국어문학과, 영미어문학과, 법학과, 경찰행정학과, 행정학과, 도시계획학전공, 식품생명공학과, 식품영양학과, 치위생학과, 물리치료학과, 방사선학과",
+        "영어고사 100%",
+        "경영학과 우선선발은 별도 기준 적용.",
+        "3·13~14"
+      ],
+      [
+        "학사편입학",
+        "금융수학전공, 빅데이터경영전공, 화공생명공학전공, 배터리공학전공, 기계공학전공, 설비·소방공학전공, 스마트팩토리전공, 토목환경공학과, 신소재공학과, 바이오나노학과, 생명과학과, 반도체물리학과, 화학과, 전자공학과, 반도체공학과, 시스템반도체학과, 인공지능학과, 컴퓨터공학과, 스마트보안학과, 전기공학과, 스마트시티학과",
+        "수학고사 100%",
+        "",
+        "3·13~14"
+      ],
+      [
+        "우선선발(일반)",
+        "경영학과, 회계세무학과",
+        "자격실적심사 50% + 면접고사 50%",
+        "자격실적심사는 해당 자격시험의 1차 합격 점수를 반영합니다.",
+        "15~16"
+      ],
+      [
+        "우선선발(학사)",
+        "경영학과",
+        "자격실적심사 50% + 면접고사 50%",
+        "세부 전형 기준상 경영학과만 해당합니다. 자격실적심사는 해당 자격시험의 1차 합격 점수를 반영합니다.",
+        "13·15~16"
+      ],
+      [
+        "농어촌",
+        "경제학과, 응용통계학과, 사회복지학과, 법학과, 식품생명공학과, 간호학과, 치위생학과",
+        "영어고사 100%",
+        "간호학과는 전적대학 간호학과 전공자에 한함.",
+        "3·17~18"
+      ],
+      [
+        "농어촌",
+        "생명과학과, 화학과, 반도체공학과",
+        "수학고사 100%",
+        "",
+        "3·17~18"
+      ],
+      [
+        "특성화고교",
+        "경영학과, 행정학과",
+        "영어고사 100%",
+        "",
+        "3"
+      ],
+      [
+        "특성화고교",
+        "화공생명공학전공",
+        "수학고사 100%",
+        "",
+        "3"
+      ],
+      [
+        "재외국민 및 외국인",
+        "해당 전형 모집단위",
+        "면접고사 100%",
+        "시각디자인전공은 면접 때 포트폴리오 제출. 지원자 유형에 따른 지원 가능 모집단위는 요강을 확인하세요.",
+        "3·21"
+      ],
+      [
+        "의료인력 및 유치원교사",
+        "유아교육학과, 간호학과, 치위생학과, 방사선학과, 물리치료학과",
+        "영어고사 40% + 면접고사 30% + 전적대학 성적 30%",
+        "영어 객관식 40문항·60분. 세 평가요소를 합산해 총점순으로 선발합니다.",
+        "3·22~23"
+      ],
+      [
+        "군위탁",
+        "교육부 추천인원에 한해 모집",
+        "면접고사 100%",
+        "",
+        "3"
+      ]
+    ],
+    "k": [
+      [
+        "일반편입학",
+        "공과대학, AI융합대학, 스마트드론공학과, AI자율주행시스템공학과, 자유전공학부(공학적성)",
+        "필기고사: 영어 50% + 수학 50%",
+        "과목별 객관식 20문항, 총 100분",
+        "6·11~12"
+      ],
+      [
+        "일반편입학",
+        "항공·경영대학, 자유전공학부(이학/사회적성)",
+        "필기고사: 영어 100%",
+        "객관식 30문항, 60분",
+        "6·11~12"
+      ],
+      [
+        "학사편입학",
+        "공과대학, AI융합대학, 스마트드론공학과, AI자율주행시스템공학과",
+        "필기고사: 영어 50% + 수학 50%",
+        "과목별 객관식 20문항, 총 100분",
+        "6·11~12"
+      ],
+      [
+        "학사편입학",
+        "항공·경영대학",
+        "필기고사: 영어 100%",
+        "객관식 30문항, 60분",
+        "6·11~12"
+      ],
+      [
+        "농·어촌학생",
+        "항공·경영대학",
+        "필기고사: 영어 100%",
+        "객관식 30문항, 60분",
+        "6·11~12"
+      ],
+      [
+        "특성화고교졸업자",
+        "AI융합대학",
+        "필기고사: 영어 50% + 수학 50%",
+        "과목별 객관식 20문항, 총 100분",
+        "6·11~12"
+      ],
+      [
+        "재외국민",
+        "항공·경영대학",
+        "필기고사: 영어 100%",
+        "객관식 30문항, 60분",
+        "6·11~12"
+      ],
+      [
+        "군위탁",
+        "전 모집단위(자유전공학부 제외)",
+        "면접 100%(100점)",
+        "면접위원 2인 대 지원자 1인, 10분 이내. 면접 평균 60점 미만은 불합격.",
+        "11~12"
+      ]
+    ]
+  },
+  "events": [
+    [
+      "g",
+      0,
+      "2026-12-02",
+      "09:00",
+      "입학처를 통한 인터넷 원서접수",
+      "5~6"
+    ],
+    [
+      "g",
+      1,
+      "2026-12-04",
+      "18:00",
+      "입학처를 통한 인터넷 원서접수",
+      "5~6"
+    ],
+    [
+      "g",
+      6,
+      "2026-12-02",
+      "",
+      "원서접수 사이트에서 온라인 제출. 시작 시각은 전형일정표에 미표기.",
+      "5, 25"
+    ],
+    [
+      "g",
+      7,
+      "2027-01-22",
+      "13:00",
+      "원서접수 사이트에서 온라인 제출",
+      "5, 25"
+    ],
+    [
+      "g",
+      2,
+      "2026-12-28",
+      "",
+      "일반·학사(우선선발 제외), 농어촌, 특성화고교, 의료인력 및 유치원교사 전형. 고사 시간과 장소는 12월 18일부터 입학처에서 확인.",
+      "5, 12, 14, 18~19, 22~23"
+    ],
+    [
+      "g",
+      3,
+      "2027-01-20",
+      "",
+      "우선선발, 재외국민 및 외국인, 의료인력 및 유치원교사 등 면접 대상 전형. 고사 시간과 장소는 입학처에서 확인.",
+      "3, 5, 16, 21~23"
+    ],
+    [
+      "g",
+      5,
+      "2027-02-06",
+      "",
+      "입학처 홈페이지에서 확인. 요강 표기: ‘합격자 발표’.",
+      "5, 8"
+    ],
+    [
+      "k",
+      0,
+      "2026-12-01",
+      "09:00",
+      "인터넷 원서접수",
+      "7, 17"
+    ],
+    [
+      "k",
+      1,
+      "2026-12-04",
+      "18:00",
+      "인터넷 원서접수",
+      "7, 17"
+    ],
+    [
+      "k",
+      2,
+      "2026-12-12",
+      "10:00~11:40",
+      "09:30까지 입실 · 영어·수학 · 공과대학, AI융합대학, 스마트드론공학과, AI자율주행시스템공학과, 자유전공학부(공학적성). 군위탁 제외.",
+      "7, 11",
+      "오전"
+    ],
+    [
+      "k",
+      2,
+      "2026-12-12",
+      "15:00~16:00",
+      "14:30까지 입실 · 영어 · 항공·경영대학, 자유전공학부(이학/사회적성). 군위탁 제외.",
+      "7, 11",
+      "오후"
+    ],
+    [
+      "k",
+      6,
+      "2027-01-08",
+      "",
+      "원서접수 시스템 온라인 제출. 시작 시각은 전형일정표에 미표기.",
+      "7, 17"
+    ],
+    [
+      "k",
+      7,
+      "2027-01-19",
+      "16:00",
+      "온라인 제출 마감. 최종합격자는 입학 전까지 원본 제출.",
+      "7, 17"
+    ],
+    [
+      "k",
+      3,
+      "2027-01-19",
+      "",
+      "군위탁편입학 지원자만 해당. 본교 지정장소.",
+      "7, 11"
+    ],
+    [
+      "k",
+      5,
+      "2027-02-04",
+      "",
+      "본교 입학안내 홈페이지에서 확인",
+      "7"
+    ]
+  ]
+}
+</script>
+<!-- DATA:END -->
+<script>
+'use strict';
+const D=JSON.parse(document.getElementById('kb-data').textContent), S=D.schools, $=id=>document.getElementById(id);
+const options=(el,pairs)=>{el.replaceChildren(...pairs.map(([v,t])=>new Option(t,v)))};
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const entries=Object.entries(S), schoolOptions=entries.map(([id,s])=>[id,s.name]);
+options($('calSchool'),[['','모든 대학'],...schoolOptions]);options($('calType'),[['','모든 일정 항목'],...D.types.map((t,i)=>[String(i),t])]);
+for(const id of ['quotaSchool','methodSchool']){options($(id),[['','대학 선택'],...schoolOptions]);$(id).options[0].disabled=true;$(id).selectedIndex=0;}
+const weeks=['일','월','화','수','목','금','토'];const z=n=>String(n).padStart(2,'0');const split=d=>d.split('-').map(Number);
+const fullDate=d=>{const [y,m,a]=split(d);return `${y}.${z(m)}.${z(a)}.(${weeks[new Date(y,m-1,a).getDay()]})`};
+const events=D.events.map(([school,type,date,time,note,page,session],id)=>({school,type,date,time,note,page,session,id})).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)||a.type-b.type);
+const label=e=>D.types[e.type]+(e.session?' · '+e.session:'');const source=e=>S[e.school].file+' · PDF '+e.page+'쪽';
+const startMonth=events[0].date.slice(0,7);let [year,month]=split(startMonth);const monthId=()=>`${year}-${z(month)}`;
+const tabs=[['tabCal','schedule'],['tabQuota','quota'],['tabMethod','method']];
+for(const [button,section] of tabs)$(button).onclick=()=>{for(const [b,s] of tabs){$(s).hidden=s!==section;$(b).setAttribute('aria-pressed',String(s===section))}};
+function filtered(){return events.filter(e=>(!$('calSchool').value||e.school===$('calSchool').value)&&(!$('calType').value||e.type===Number($('calType').value)))}
+function renderCal(){
+ const mode=$('view').value,all=mode==='allList',list=filtered(),shown=all?list:list.filter(e=>e.date.startsWith(monthId()));
+ $('monthButtons').hidden=all;$('calHeading').textContent=all?'전체 일정':`${year}년 ${month}월`;
+ if(mode==='calendar'){
+  const at=new Date(year,month-1,1).getDay(),days=new Date(year,month,0).getDate();let cells='';
+  for(let i=0;i<Math.ceil((at+days)/7)*7;i++){
+   if(i%7===0)cells+='<tr>';const day=i-at+1;
+   if(day<1||day>days)cells+='<td class="pad"></td>';else{
+    const daily=shown.filter(e=>e.date===monthId()+'-'+z(day));
+    cells+=`<td><span class="day">${day}</span>${daily.map(e=>`<button type="button" class="event ${esc(e.school)}" data-id="${e.id}" aria-label="${esc(fullDate(e.date)+' '+S[e.school].name+' '+label(e)+' '+e.time)}"><strong>${esc(S[e.school].short)}</strong>${esc(label(e))}${e.time?'<br>'+esc(e.time):''}</button>`).join('')}</td>`;
+   }if(i%7===6)cells+='</tr>';
+  }
+  $('calBody').innerHTML=`<div class="scroll" tabindex="0" aria-label="월간 달력, 좁은 화면에서는 가로 스크롤"><table class="cal" aria-label="${year}년 ${month}월 달력"><thead><tr>${weeks.map(d=>`<th scope="col">${d}</th>`).join('')}</tr></thead><tbody>${cells}</tbody></table></div>`;
+ }else $('calBody').innerHTML=`<ul class="agenda">${shown.map(e=>`<li><p><strong>${esc(fullDate(e.date))} ${esc(e.time)}</strong></p><p><span class="badge ${esc(e.school)}">${esc(S[e.school].short)}</span><strong>${esc(label(e))}</strong></p><p>${esc(e.note)}</p><p class="small">${esc(source(e))}</p></li>`).join('')}</ul>`;
+ $('calNote').textContent=$('calType').value==='4'&&!list.length?'선택한 범위의 반영 모집요강에는 별도 1단계 합격자 발표일이 명시되어 있지 않습니다.':(shown.length?`표시 일정 ${shown.length}건 · 시각은 한국시간 기준이며, 미기재 시 시각을 표시하지 않습니다.`:'표시할 일정이 없습니다. 다른 달 또는 필터를 선택하세요.');
+}
+function jump(delta){const d=new Date(year,month-1+delta,1);year=d.getFullYear();month=d.getMonth()+1;renderCal()}
+function firstMonth(){[year,month]=split(filtered()[0]?.date.slice(0,7)||startMonth)}
+$('prev').onclick=()=>jump(-1);$('next').onclick=()=>jump(1);$('first').onclick=()=>{firstMonth();renderCal()};
+$('calSchool').onchange=$('calType').onchange=()=>{if(!filtered().some(e=>e.date.startsWith(monthId())))firstMonth();renderCal()};$('view').onchange=renderCal;
+$('clearCal').onclick=()=>{$('calSchool').value='';$('calType').value='';$('view').value='calendar';firstMonth();renderCal()};
+$('calBody').onclick=ev=>{const b=ev.target.closest('button[data-id]');if(!b)return;const e=events.find(x=>x.id===Number(b.dataset.id));if(!e)return;$('detailTitle').textContent=S[e.school].name+' · '+label(e);$('detailBody').innerHTML=`<p><strong>${esc(fullDate(e.date))} ${esc(e.time)}</strong></p><p>${esc(e.note)}</p><p class="small">${esc(source(e))}</p>`;$('detail').showModal()};
+const norm=s=>String(s??'').normalize('NFKC').toLowerCase().replace(/[\s·ㆍ/().-]/g,'');
+function setTracks(id,s,tracks){$(id).disabled=!s||!tracks.length;options($(id),[['',s?'모든 전형':'대학을 먼저 선택하세요'],...tracks.map(t=>[t,t])]);}
+function populateTracks(){const s=S[$('quotaSchool').value];$('keyword').disabled=!s;setTracks('track',s,s?.tracks??[])}
+function renderQuota(){
+ const s=S[$('quotaSchool').value],track=$('track').value,q=norm($('keyword').value);let hits=0;
+ if(!s){$('quotaBody').replaceChildren();$('quotaStatus').textContent='모집인원을 확인할 대학을 선택하세요.';return;}
+ const groups=s.tracks.map((t,i)=>{
+  if(track&&t!==track)return '';
+  const rows=s.rows.filter(([u,n,maj])=>n[i]&&(!q||norm(u).includes(q)||norm(maj).includes(q)));if(!rows.length)return '';hits+=rows.length;
+  const title=esc(t)+(s.totals[i]!=null?` · 요강 전체 ${esc(s.totals[i])}명`:'');
+  return `<div class="scroll quota" tabindex="0" aria-label="${esc(s.name+' '+t)}"><table><caption>${title}</caption><thead><tr><th scope="col">공식 모집단위</th><th scope="col">세부전공·비고</th><th scope="col" class="qty">모집인원</th></tr></thead><tbody>${rows.map(([u,n,maj,note])=>`<tr><th scope="row">${esc(u)}</th><td>${esc([maj,note].filter(Boolean).join(' / ')||'—')}</td><td class="qty">${esc(n[i])}${typeof n[i]==='number'?'명':''}</td></tr>`).join('')}</tbody></table></div>`;
+ }).join('');
+ $('quotaBody').innerHTML=groups?`<section class="quota"><h3>${esc(s.name)}</h3><p class="notice">${esc(s.quotaNote)}</p>${groups}<p class="small">근거: ${esc(s.file)} · ${esc(s.quotaRef)}</p></section>`:'';
+ $('quotaStatus').textContent=hits?`전형별 모집단위 결과 ${hits}건 · 제목의 ‘요강 전체’ 인원은 해당 대학·전형 전체 기준입니다.`:'검색 결과가 없습니다. 대학·전형을 변경하거나 학과명의 일부를 입력해 보세요.';
+}
+$('quotaSchool').onchange=()=>{$('keyword').value='';populateTracks();renderQuota()};$('track').onchange=renderQuota;$('keyword').oninput=renderQuota;
+$('clearQuota').onclick=()=>{$('quotaSchool').selectedIndex=0;$('keyword').value='';populateTracks();renderQuota()};
+$('version').textContent=`자료 반영일: ${D.updated} · 반영 대학 ${entries.length}개교`;
+$('sources').replaceChildren(...entries.map(([,s])=>{const li=document.createElement('li');li.textContent=`${s.name} · ${s.file} · ${s.refs}`;return li}));
+const methodsFor=id=>D.methods?.[id]??[];
+function populateMethodTracks(){const id=$('methodSchool').value;setTracks('methodTrack',S[id],[...new Set(methodsFor(id).map(r=>r[0]))]);}
+function renderMethods(){
+ const id=$('methodSchool').value,s=S[id],track=$('methodTrack').value;
+ if(!s){$('methodBody').replaceChildren();$('methodStatus').textContent='전형방법을 확인할 대학을 선택하세요.';return;}
+ const priority={'일반편입학':'우선선발(일반)','학사편입학':'우선선발(학사)'}[track];const rows=methodsFor(id).filter(([t])=>!track||t===track||t===priority);
+ const groups=[...new Set(rows.map(r=>r[0]))].map(t=>{
+  const body=rows.filter(r=>r[0]===t).map(([,unit,score,note,pages])=>`<tr><th scope="row">${esc(unit)}</th><td><strong>${esc(score)}</strong>${note?'<br>'+esc(note):''}<br><span class="small">근거: PDF ${esc(pages)}쪽</span></td></tr>`).join('');
+  return `<div class="scroll quota" tabindex="0" aria-label="${esc(s.name+' '+t+' 전형방법')}"><table><caption>${esc(t)}</caption><thead><tr><th scope="col" style="width:52%">적용 모집단위</th><th scope="col">전형요소·반영비율</th></tr></thead><tbody>${body}</tbody></table></div>`;
+ }).join('');
+ $('methodBody').innerHTML=groups?`<section class="quota"><h3>${esc(s.name)}</h3>${groups}<p class="small">반영 자료: ${esc(s.file)}</p></section>`:'';
+ $('methodStatus').textContent=rows.length?`전형방법 ${rows.length}건 · 모집단위별로 적용되는 평가요소를 확인하세요.`:'선택한 조건에 해당하는 전형방법이 아직 반영되지 않았습니다.';
+}
+$('methodSchool').onchange=()=>{populateMethodTracks();renderMethods()};$('methodTrack').onchange=renderMethods;
+$('clearMethod').onclick=()=>{$('methodSchool').selectedIndex=0;populateMethodTracks();renderMethods()};
+populateTracks();renderQuota();renderCal();populateMethodTracks();renderMethods();
+</script></body></html>
