@@ -2,12 +2,25 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2027학년도 편입학 일정·모집인원</title>
 <style>
 :root{--ink:#17243a;--muted:#4c5e74;--line:#d7e1ed;--brand:#104b82;--wash:#f3f7fc;--paper:#fff}*{box-sizing:border-box}body{margin:0;background:var(--wash);font:15px/1.55 system-ui,'Malgun Gothic',sans-serif;color:var(--ink)}header{background:#112f50;color:white;padding:36px 20px 30px}header>div,main{max-width:1140px;margin:auto}header p{margin:5px 0;color:#dfebf8}.eyebrow{font-weight:750;letter-spacing:.1em}h1{font-size:clamp(26px,4vw,40px);margin:4px 0}main{padding:20px 16px 36px}nav,.bar,.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}nav{margin-bottom:12px}button,select,input{font:inherit;border:1px solid #9fadc0;border-radius:9px;padding:8px 12px;color:var(--ink);background:#fff}button{cursor:pointer}button[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:white}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #d88c22;outline-offset:2px}.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;margin-bottom:12px}h2{margin:0 0 3px}h3{margin:0}.sub,.small{color:var(--muted)}.sub{margin:4px 0 14px}.small{font-size:13px}.bar{gap:12px;margin:14px 0}.bar label{display:grid;gap:4px;font-weight:650}.bar select,.bar input{max-width:100%;font-weight:400}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.scroll{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;text-align:left}caption{text-align:left;padding:9px 12px;font-weight:750}th,td{padding:9px 12px;border-bottom:1px solid var(--line)}th{background:#eaf1fa}.cal{table-layout:fixed;min-width:665px}.cal th{text-align:center;padding:6px}.cal td{height:82px;vertical-align:top;border-right:1px solid var(--line);padding:5px}.cal td:last-child{border-right:0}.day{display:block;font-weight:700;margin-bottom:3px}.pad{background:#f6f8fb}.event{display:block;width:100%;margin:3px 0;padding:4px 5px;text-align:left;background:#e4f1ff;border:0;border-left:3px solid #2b6398;border-radius:5px;font-size:12px;overflow-wrap:anywhere}.event.k{background:#e2f5eb;border-left-color:#267350}.event strong{display:block}.agenda{list-style:none;margin:0;padding:0}.agenda li{padding:10px 0;border-bottom:1px solid var(--line)}.agenda li:last-child{border:0}.agenda p{margin:2px 0}.badge{display:inline-block;border-radius:999px;background:#e4f1ff;color:#1b4a7a;padding:1px 8px;margin-right:6px;font-size:13px}.badge.k{background:#e2f5eb;color:#235841}.notice{border-left:3px solid #5581aa;background:#f3f7fc;padding:9px 12px;margin:12px 0;color:#30465e}.quota{margin:16px 0}.quota table{min-width:510px}.qty{width:110px;white-space:nowrap;font-weight:700}dialog{width:min(540px,calc(100% - 30px));border:1px solid var(--line);border-radius:14px;padding:22px;color:var(--ink)}dialog::backdrop{background:#12263f88}dialog p{margin:8px 0}dialog form{margin-top:14px}footer{color:var(--muted);font-size:13px}summary{cursor:pointer;font-weight:650}[hidden]{display:none!important}@media(max-width:620px){.panel{padding:13px}.cal td{height:70px}.bar{align-items:stretch}.bar label{flex:1 1 140px}header{padding:25px 16px 20px}}
+
+.calendar-label-mobile,.calendar-help-mobile{display:none}
+@media(max-width:620px){
+ .calendar-scroll .cal{width:100%;min-width:0;table-layout:fixed}
+ .calendar-scroll{overflow:visible}
+ .cal th{padding:5px 1px;font-size:12px}
+ .cal td{height:55px;padding:3px 1px 4px}
+ .cal .day{padding-left:2px;font-size:12px}
+ .cal .event{padding:4px 2px;border-left-width:2px;min-width:0;min-height:24px;font-size:10px;line-height:1.3;text-align:center;white-space:normal;overflow-wrap:anywhere}
+ .cal .event strong{margin-bottom:2px}
+ .calendar-label-desktop{display:none}
+ .calendar-label-mobile,.calendar-help-mobile{display:block}
+}
 </style></head><body>
 <header><div><p class="eyebrow">편입학 모집요강 한눈에 보기</p><h1>2027학년도 편입학</h1><p>대학별 전형일정, 모집단위별 선발인원, 전형방법을 확인하세요.</p></div></header>
 <main><nav aria-label="페이지 메뉴"><button type="button" id="tabCal" aria-pressed="true" aria-controls="schedule">전형일정</button><button type="button" id="tabQuota" aria-pressed="false" aria-controls="quota">대학별 전공 모집인원</button><button type="button" id="tabMethod" aria-pressed="false" aria-controls="method">전형방법</button></nav>
 <section class="panel" id="schedule"><h2>전형일정</h2><p class="sub">대학과 일정 항목을 선택하세요. 달력의 일정을 누르면 대상과 세부 시각을 볼 수 있습니다.</p>
 <div class="bar"><label>대학<select id="calSchool"></select></label><label>일정 항목<select id="calType"></select></label><label>보기 방식<select id="view"><option value="calendar">월간 달력</option><option value="monthList">월별 목록</option><option value="allList">전체 일정 목록</option></select></label><button type="button" id="clearCal">필터 초기화</button></div>
-<div class="toolbar"><h3 id="calHeading" aria-live="polite"></h3><div class="actions" id="monthButtons"><button type="button" id="prev" aria-label="이전 달">‹ 이전 달</button><button type="button" id="next" aria-label="다음 달">다음 달 ›</button><button type="button" id="first">첫 일정 달</button></div></div><div id="calBody"></div><p id="calNote" class="small" role="status"></p></section>
+<div class="toolbar"><h3 id="calHeading" aria-live="polite"></h3><div class="actions" id="monthButtons"><button type="button" id="prev" aria-label="이전 달">‹ 이전 달</button><button type="button" id="next" aria-label="다음 달">다음 달 ›</button><button type="button" id="first">첫 일정 달</button></div></div><p id="calendarHelpMobile" class="small calendar-help-mobile" hidden>일정을 누르면 정확한 시각과 세부 안내를 볼 수 있습니다.</p><div id="calBody"></div><p id="calNote" class="small" role="status"></p></section>
 <section class="panel" id="quota" hidden><h2>대학별 전공 모집인원</h2><p class="sub">대학을 먼저 선택하세요. 선택한 대학의 모집인원을 전형별로 확인하거나 학과·전공 이름으로 검색할 수 있습니다. 선발인원은 모집요강의 공식 모집단위 기준입니다.</p>
 <div class="bar"><label>대학<select id="quotaSchool"></select></label><label>전형<select id="track"></select></label><label>모집단위·전공 검색<input id="keyword" type="search" placeholder="예: 컴퓨터공학" autocomplete="off"></label><button type="button" id="clearQuota">필터 초기화</button></div><p id="quotaStatus" class="small" role="status"></p><div id="quotaBody"></div></section>
 <section class="panel" id="method" hidden aria-labelledby="methodHeading"><h2 id="methodHeading">전형방법</h2><p class="sub">대학을 먼저 선택하세요. 선택한 대학의 전형방법을 전형별로 확인할 수 있습니다.</p>
@@ -879,24 +892,26 @@ for(const id of ['quotaSchool','methodSchool']){options($(id),[['','대학 선�
 const weeks=['일','월','화','수','목','금','토'];const z=n=>String(n).padStart(2,'0');const split=d=>d.split('-').map(Number);
 const fullDate=d=>{const [y,m,a]=split(d);return `${y}.${z(m)}.${z(a)}.(${weeks[new Date(y,m-1,a).getDay()]})`};
 const events=D.events.map(([school,type,date,time,note,page,session],id)=>({school,type,date,time,note,page,session,id})).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)||a.type-b.type);
-const label=e=>D.types[e.type]+(e.session?' · '+e.session:'');const source=e=>S[e.school].file+' · PDF '+e.page+'쪽';
+const label=e=>D.types[e.type]+(e.session?' · '+e.session:'');
+const mobileLabels=['접수 시작','접수 마감','필기고사','면접고사','1단계 발표','최초합격 발표','서류 시작','서류 마감'];
+const mobileLabel=e=>(mobileLabels[e.type]??D.types[e.type])+(e.session?' '+e.session:'');const source=e=>S[e.school].file+' · PDF '+e.page+'쪽';
 const startMonth=events[0].date.slice(0,7);let [year,month]=split(startMonth);const monthId=()=>`${year}-${z(month)}`;
 const tabs=[['tabCal','schedule'],['tabQuota','quota'],['tabMethod','method']];
 for(const [button,section] of tabs)$(button).onclick=()=>{for(const [b,s] of tabs){$(s).hidden=s!==section;$(b).setAttribute('aria-pressed',String(s===section))}};
 function filtered(){return events.filter(e=>(!$('calSchool').value||e.school===$('calSchool').value)&&(!$('calType').value||e.type===Number($('calType').value)))}
 function renderCal(){
  const mode=$('view').value,all=mode==='allList',list=filtered(),shown=all?list:list.filter(e=>e.date.startsWith(monthId()));
- $('monthButtons').hidden=all;$('calHeading').textContent=all?'전체 일정':`${year}년 ${month}월`;
+ $('monthButtons').hidden=all;$('calendarHelpMobile').hidden=mode!=='calendar';$('calHeading').textContent=all?'전체 일정':`${year}년 ${month}월`;
  if(mode==='calendar'){
   const at=new Date(year,month-1,1).getDay(),days=new Date(year,month,0).getDate();let cells='';
   for(let i=0;i<Math.ceil((at+days)/7)*7;i++){
    if(i%7===0)cells+='<tr>';const day=i-at+1;
    if(day<1||day>days)cells+='<td class="pad"></td>';else{
     const daily=shown.filter(e=>e.date===monthId()+'-'+z(day));
-    cells+=`<td><span class="day">${day}</span>${daily.map(e=>`<button type="button" class="event ${esc(e.school)}" data-id="${e.id}" aria-label="${esc(fullDate(e.date)+' '+S[e.school].name+' '+label(e)+' '+e.time)}"><strong>${esc(S[e.school].short)}</strong>${esc(label(e))}${e.time?'<br>'+esc(e.time):''}</button>`).join('')}</td>`;
+    cells+=`<td><span class="day">${day}</span>${daily.map(e=>`<button type="button" class="event ${esc(e.school)}" data-id="${e.id}" aria-label="${esc(fullDate(e.date)+' '+S[e.school].name+' '+label(e)+' '+e.time)}"><strong>${esc(S[e.school].short)}</strong><span class="calendar-label-desktop" aria-hidden="true">${esc(label(e))}${e.time?'<br>'+esc(e.time):''}</span><span class="calendar-label-mobile" aria-hidden="true">${esc(mobileLabel(e))}</span></button>`).join('')}</td>`;
    }if(i%7===6)cells+='</tr>';
   }
-  $('calBody').innerHTML=`<div class="scroll" tabindex="0" aria-label="월간 달력, 좁은 화면에서는 가로 스크롤"><table class="cal" aria-label="${year}년 ${month}월 달력"><thead><tr>${weeks.map(d=>`<th scope="col">${d}</th>`).join('')}</tr></thead><tbody>${cells}</tbody></table></div>`;
+  $('calBody').innerHTML=`<div class="scroll calendar-scroll"><table class="cal" aria-label="${year}년 ${month}월 달력"><thead><tr>${weeks.map(d=>`<th scope="col">${d}</th>`).join('')}</tr></thead><tbody>${cells}</tbody></table></div>`;
  }else $('calBody').innerHTML=`<ul class="agenda">${shown.map(e=>`<li><p><strong>${esc(fullDate(e.date))} ${esc(e.time)}</strong></p><p><span class="badge ${esc(e.school)}">${esc(S[e.school].short)}</span><strong>${esc(label(e))}</strong></p><p>${esc(e.note)}</p><p class="small">${esc(source(e))}</p></li>`).join('')}</ul>`;
  $('calNote').textContent=$('calType').value==='4'&&!list.length?'선택한 범위의 반영 모집요강에는 별도 1단계 합격자 발표일이 명시되어 있지 않습니다.':(shown.length?`표시 일정 ${shown.length}건 · 시각은 한국시간 기준이며, 미기재 시 시각을 표시하지 않습니다.`:'표시할 일정이 없습니다. 다른 달 또는 필터를 선택하세요.');
 }
@@ -916,7 +931,7 @@ function renderQuota(){
   if(track&&t!==track)return '';
   const rows=s.rows.filter(([u,n,maj])=>n[i]&&(!q||norm(u).includes(q)||norm(maj).includes(q)));if(!rows.length)return '';hits+=rows.length;
   const title=esc(t)+(s.totals[i]!=null?` · 요강 전체 ${esc(s.totals[i])}명`:'');
-  return `<div class="scroll quota" tabindex="0" aria-label="${esc(s.name+' '+t)}"><table><caption>${title}</caption><thead><tr><th scope="col">공식 모집단위</th><th scope="col">세부전공·비고</th><th scope="col" class="qty">모집인원</th></tr></thead><tbody>${rows.map(([u,n,maj,note])=>`<tr><th scope="row">${esc(u)}</th><td>${esc([maj,note].filter(Boolean).join(' / ')||'—')}</td><td class="qty">${esc(n[i])}${typeof n[i]==='number'?'명':''}</td></tr>`).join('')}</tbody></table></div>`;
+  return `<div class="scroll quota" tabindex="0" aria-label="${esc(s.name+' '+t)}"><table><caption>${title}</caption><thead><tr><th scope="col">모집단위</th><th scope="col" class="qty">모집인원</th><th scope="col">세부전공·비고</th></tr></thead><tbody>${rows.map(([u,n,maj,note])=>`<tr><th scope="row">${esc(u)}</th><td class="qty">${esc(n[i])}${typeof n[i]==='number'?'명':''}</td><td>${esc([maj,note].filter(Boolean).join(' / ')||'—')}</td></tr>`).join('')}</tbody></table></div>`;
  }).join('');
  $('quotaBody').innerHTML=groups?`<section class="quota"><h3>${esc(s.name)}</h3><p class="notice">${esc(s.quotaNote)}</p>${groups}<p class="small">근거: ${esc(s.file)} · ${esc(s.quotaRef)}</p></section>`:'';
  $('quotaStatus').textContent=hits?`전형별 모집단위 결과 ${hits}건 · 제목의 ‘요강 전체’ 인원은 해당 대학·전형 전체 기준입니다.`:'검색 결과가 없습니다. 대학·전형을 변경하거나 학과명의 일부를 입력해 보세요.';
