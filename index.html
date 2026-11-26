@@ -4653,7 +4653,14 @@ options($('calSchool'),[['','모든 대학'],...schoolOptions]);options($('calTy
 for(const id of ['quotaSchool','methodSchool']){options($(id),[['','대학 선택'],...schoolOptions]);$(id).options[0].disabled=true;$(id).selectedIndex=0;}
 const weeks=['일','월','화','수','목','금','토'];const z=n=>String(n).padStart(2,'0');const split=d=>d.split('-').map(Number);
 const fullDate=d=>{const [y,m,a]=split(d);return `${y}.${z(m)}.${z(a)}.(${weeks[new Date(y,m-1,a).getDay()]})`};
-const events=D.events.map(([school,type,date,time,note,page,session],id)=>({school,type,date,time,note,page,session,id})).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)||a.type-b.type);
+const schoolOrder=new Map(schoolOptions.map(([id],i)=>[id,i]));
+function scheduleMinutes(time){
+ const match=String(time??'').match(/(?:(오전|오후)\s*)?\b([01]?\d|2[0-4]):([0-5]\d)\b/);
+ if(!match)return Infinity;
+ const hour=Number(match[2]);
+ return (match[1]&&hour>=1&&hour<=12?hour%12+(match[1]==='오후'?12:0):hour)*60+Number(match[3]);
+}
+const events=D.events.map(([school,type,date,time,note,page,session],id)=>({school,type,date,time,note,page,session,id,minutes:scheduleMinutes(time)})).sort((a,b)=>a.date.localeCompare(b.date)||(a.minutes-b.minutes)||schoolOrder.get(a.school)-schoolOrder.get(b.school)||a.type-b.type||a.id-b.id);
 const label=e=>D.types[e.type]+(e.session?' · '+e.session:'');
 const calendarLabel=e=>D.types[e.type].replace(/일$/,'');
 const source=e=>S[e.school].file+' · PDF '+e.page+'쪽';
