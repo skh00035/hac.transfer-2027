@@ -14,15 +14,16 @@
  .cal .event strong{margin-bottom:2px}
  .calendar-help-mobile{display:block}
 }
-/* 일정 종류별 캘린더 배경 */
+/* 달력과 일정 목록이 같은 항목별 색상을 사용 */
+.agenda .badge[data-type]{background:var(--event-bg,#e4f1ff);color:var(--event-ink,#173c63)}
 .cal .event{background:var(--event-bg,#e4f1ff);border-left-color:var(--event-edge,#2b6398);color:var(--event-ink,#173c63)}
-.cal .event[data-type="0"],.cal .event[data-type="1"]{--event-bg:#dcecff;--event-edge:#2870c3;--event-ink:#173c63}
-.cal .event[data-type="2"]{--event-bg:#fff1ad;--event-edge:#947100;--event-ink:#503c00}
-.cal .event[data-type="6"],.cal .event[data-type="7"]{--event-bg:#def5e4;--event-edge:#2d7d47;--event-ink:#1d5230}
-.cal .event[data-type="3"]{--event-bg:#efe4ff;--event-edge:#8050b0;--event-ink:#4a286f}
-.cal .event[data-type="4"]{--event-bg:#ffe6ce;--event-edge:#b75814;--event-ink:#6a3310}
-.cal .event[data-type="5"]{--event-bg:#ffe1e3;--event-edge:#bd3e4a;--event-ink:#751e29}
-.cal .event[data-type="8"]{--event-bg:#fce7f3;--event-edge:#be5687;--event-ink:#831843}
+:is(.cal .event,.agenda .badge)[data-type="0"],:is(.cal .event,.agenda .badge)[data-type="1"]{--event-bg:#dcecff;--event-edge:#2870c3;--event-ink:#173c63}
+:is(.cal .event,.agenda .badge)[data-type="2"]{--event-bg:#fff1ad;--event-edge:#947100;--event-ink:#503c00}
+:is(.cal .event,.agenda .badge)[data-type="6"],:is(.cal .event,.agenda .badge)[data-type="7"]{--event-bg:#def5e4;--event-edge:#2d7d47;--event-ink:#1d5230}
+:is(.cal .event,.agenda .badge)[data-type="3"]{--event-bg:#efe4ff;--event-edge:#8050b0;--event-ink:#4a286f}
+:is(.cal .event,.agenda .badge)[data-type="4"]{--event-bg:#ffe6ce;--event-edge:#b75814;--event-ink:#6a3310}
+:is(.cal .event,.agenda .badge)[data-type="5"]{--event-bg:#ffe1e3;--event-edge:#bd3e4a;--event-ink:#751e29}
+:is(.cal .event,.agenda .badge)[data-type="8"]{--event-bg:#fce7f3;--event-edge:#be5687;--event-ink:#831843}
 .cal .event strong,.cal .event > span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cal .event .event-line{display:flex;align-items:center;gap:3px;min-width:0}
 .cal .event .event-line > span:not(.event-mark){overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -34,6 +35,17 @@
 @media(max-width:420px){.cal .event .event-full{display:none}.cal .event .event-compact{display:inline}}
 @media(max-width:360px){#schedule{padding-inline:8px}.cal .event .event-line{margin-inline:-1px}.cal .event .event-line > span:not(.event-mark){font-size:7px}}
 #detailBody .detail-session + .detail-session{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+/* 모집인원 표 전용: 모바일에서도 네 열을 한 화면에 표시 */
+#quotaBody .quota-table table{min-width:0;table-layout:fixed}
+#quotaBody .quota-table col:nth-child(1){width:30%}
+#quotaBody .quota-table col:nth-child(2){width:32%}
+#quotaBody .quota-table col:nth-child(3){width:14%}
+#quotaBody .quota-table th,#quotaBody .quota-table td{vertical-align:top;overflow-wrap:anywhere;word-break:keep-all}
+#quotaBody .quota-table .qty{width:auto;text-align:center;white-space:normal}
+#quotaBody .quota-table th[scope=row]{background:#f6f9fd}
+#quotaBody .quota-note{color:var(--muted)}
+#quotaBody .quota-caps{margin:4px 0 0;color:var(--muted);font-size:.9em;font-weight:400}
+@media(max-width:620px){#quotaBody .quota-table{margin:12px 0;font-size:13px;line-height:1.38}#quotaBody .quota-table th,#quotaBody .quota-table td{padding:5px 4px}#quotaBody .quota-table caption{padding:6px 5px}#quotaBody .quota-table col:nth-child(3){width:18%}#quotaBody .notice{font-size:13px;padding:7px 8px}}
 </style></head><body>
 <header><div><p class="eyebrow">편입학 모집요강 한눈에 보기</p><h1>2027학년도 편입학</h1><p>대학별 전형일정, 모집단위별 선발인원, 전형방법을 확인하세요.</p></div></header>
 <main><nav aria-label="페이지 메뉴"><button type="button" id="tabCal" aria-pressed="true" aria-controls="schedule">전형일정</button><button type="button" id="tabQuota" aria-pressed="false" aria-controls="quota">대학별 전공 모집인원</button><button type="button" id="tabMethod" aria-pressed="false" aria-controls="method">전형방법</button></nav>
@@ -49,7 +61,7 @@
 <!-- DATA:BEGIN -->
 <script id="kb-data" type="application/json">
 {
-  "updated": "2026-11-25",
+  "updated": "2026-11-26",
   "types": [
     "원서접수 시작일",
     "원서접수 마감일",
@@ -62,6 +74,7 @@
     "실기고사일"
   ],
   "schools": {
+    "ew":{"name":"이화여자대학교","short":"이화여대","file":"2027 이화여대.pdf","refs":"PDF 3~5쪽, 7~10쪽","tracks":["일반편입학","학사편입학"],"totals":[199,63],"quotaRef":"PDF 3~4쪽(책자 2~3쪽)","quotaNote":"일반편입은 모집단위별 선발. 학사편입은 모집단위별 최대인원 범위에서 계열별로 선발합니다. 최대인원을 합산한 값은 실제 선발인원이 아닙니다. 계열별 미달 시 타 계열에서 선발할 수 있습니다.","quotaCaps":{"1":{"인문":36,"자연":23,"간호":2,"국제":2}},"rows":[["국어국문학과",[3,2],"","","인문"],["중어중문학과",[3,2],"","","인문"],["불어불문학과",[1,2],"","","인문"],["독어독문학과",[0,2],"","","인문"],["사학과",[1,1],"","","인문"],["철학과",[1,1],"","","인문"],["기독교학과",[1,1],"","","인문"],["영어영문학부",[3,3],"","","인문"],["정치외교학과",[2,2],"","","인문"],["행정학과",[2,1],"","","인문"],["경제학과",[3,2],"","","인문"],["문헌정보학과",[1,1],"","","인문"],["사회학과",[2,1],"","","인문"],["사회복지학과",[1,1],"","","인문"],["심리학과",[3,2],"","","인문"],["소비자학과",[2,1],"","","인문"],["커뮤니케이션‧미디어학부",[3,3],"","","인문"],["경영학부",[5,4],"","","인문"],["융합콘텐츠학과",[2,1],"","","인문"],["의류산업학과",[3,2],"","","인문"],["국제사무학과",[1,1],"","","인문"],["식품영양학과",[2,2],"","","자연"],["융합보건학과",[1,1],"","","자연"],["수학과",[2,1],"","","자연"],["통계학과",[5,2],"","","자연"],["물리학과",[1,1],"","","자연"],["화학‧나노과학과",[3,2],"","","자연"],["생명과학과",[5,2],"","","자연"],["식품생명공학과",[2,1],"","","자연"],["화공신소재공학과",[4,2],"","","자연"],["건축학과",[3,1],"","5년제","자연"],["건축도시시스템공학과",[2,1],"","","자연"],["환경공학과",[3,1],"","","자연"],["기후에너지시스템공학과",[2,1],"","","자연"],["휴먼기계바이오공학과",[5,2],"","","자연"],["컴퓨터공학과",[5,2],"","","자연"],["사이버보안학과",[1,1],"","","자연"],["교육학과",[4,0],"","",""],["유아교육과",[2,0],"","",""],["교육공학과",[3,0],"","",""],["특수교육과",[2,0],"유아특수교육전공","",""],["특수교육과",[1,0],"중등특수교육전공","",""],["영어교육과",[3,0],"","",""],["사회과교육과",[1,0],"역사교육전공","",""],["사회과교육과",[2,0],"사회교육전공","",""],["사회과교육과",[2,0],"지리교육전공","",""],["국어교육과",[1,0],"","",""],["과학교육과",[3,0],"물리교육전공","",""],["과학교육과",[3,0],"화학교육전공","",""],["과학교육과",[3,0],"생물교육전공","",""],["과학교육과",[3,0],"지구과학교육전공","",""],["수학교육과",[4,0],"","",""],["간호학부",[4,2],"간호학전공","","간호"],["간호학부",[2,2],"글로벌건강간호학전공","","간호"],["약학부",[17,0],"약학전공","",""],["국제학부",[3,2],"국제학전공","","국제"],["국제학부",[1,2],"글로벌한국학전공","","국제"],["융합전자반도체공학부",[5,0],"전자전기공학전공","",""],["융합전자반도체공학부",[15,0],"지능형반도체공학전공","",""],["인공지능데이터사이언스학부",[12,0],"인공지능전공","",""],["인공지능데이터사이언스학부",[14,0],"데이터사이언스전공","",""]]},
     "km":{"name":"국민대학교","short":"국민대","file":"2027 국민대.pdf","refs":"PDF 3~6쪽, 10~17쪽, 24쪽","tracks":["일반편입학","학사편입학","농어촌학생편입학","기회균형편입학","특성화고 등을 졸업한 재직자 편입학","군위탁편입학","공무원위탁편입학"],"totals":[178,57,13,4,18],"quotaRef":"PDF 4~5쪽(책자 3~4쪽)","quotaNote":"군위탁·공무원위탁은 교육부장관 추천이 필요하며 요강에 구체 인원이 기재되지 않았습니다. 관현악·무용전공은 모집인원표의 공통 인원을 중복 합산하지 않습니다.","rows":[["한국어문학부",[3,0,1],"국어국문학전공","글로벌인문·지역대학"],["한국어문학부",[1,1],"글로벌한국어전공","글로벌인문·지역대학"],["영어영문학부",[2,1],"영어어문전공","글로벌인문·지역대학"],["영어영문학부",[1],"글로벌커뮤니케이션영어전공","글로벌인문·지역대학"],["중어중문학과",[2,0,1],"","글로벌인문·지역대학"],["한국역사학과",[2,1],"","글로벌인문·지역대학"],["행정학과",[4,1,1],"","사회과학대학"],["정치외교학과",[3,1],"","사회과학대학"],["사회학과",[2,1,1],"","사회과학대학"],["미디어·광고학부",[2,1,1],"미디어전공","사회과학대학"],["미디어·광고학부",[1],"광고홍보학전공","사회과학대학"],["교육학과",[3,0,1],"","사회과학대학"],["러시아·유라시아학과",[1],"","사회과학대학"],["동아시아국제학부",[2],"일본학전공","사회과학대학"],["동아시아국제학부",[2,1],"중국학전공","사회과학대학"],["법학부",[2,1],"공법학전공","법과대학"],["법학부",[2,2],"사법학전공","법과대학"],["기업융합법학과(야)",[0,0,0,0,3,"추천 선발","추천 선발"],"","법과대학"],["경제학과",[5,1],"","경상대학"],["국제통상금융학과",[4,1,1],"","경상대학"],["경영학부",[9,4,2],"경영학전공","경영대학"],["경영정보학부",[2,1],"비즈니스IT전공","경영대학"],["AI데이터융합경영학과",[10,1],"","경영대학"],["기업경영학부(야)",[0,0,0,0,12,"추천 선발","추천 선발"],"기업경영전공(야)","경영대학"],["회계세무학과(야)",[0,0,0,0,3,"추천 선발","추천 선발"],"","경영대학"],["KMU International Business School",[5,1],"International Business전공","International College"],["인문기술융합학부",[0,4],"미래융합전공(Ⅰ)","미래융합대학"],["신소재공학부",[1,2],"에너지·모빌리티재료전공","공과대학"],["신소재공학부",[4,1],"전자화학재료전공","공과대학"],["기계공학부",[9,4],"기계공학전공","공과대학"],["건설시스템공학부",[4,1,1],"건설시스템공학전공","공과대학"],["전자공학부",[11,2],"지능형반도체융합전자전공","공과대학"],["전자공학부",[3,1,0,1],"지능형ICT융합전공","공과대학"],["전자공학부",[4,2],"모빌리티전략전자융합전공","공과대학"],["산림기후환경학과",[1,1],"","바이오융합대학"],["바이오소재융합공학과",[2,1],"","바이오융합대학"],["바이오의학과",[12],"","바이오융합대학"],["식품영양학과",[1],"","바이오융합대학"],["융합바이오공학과",[4,1],"","바이오융합대학"],["양자융합공학과",[1,1],"","양자융합대학"],["정보보안암호수학과",[2,1],"","양자융합대학"],["에너지반도체화학공학과",[2,1,1],"","양자융합대학"],["소프트웨어학부",[5,2],"소프트웨어전공","소프트웨어융합대학"],["인공지능학부",[8],"인공지능전공","소프트웨어융합대학"],["건축학부",[1,0,1],"건축설계전공(5년제)","건축대학"],["건축학부",[1,1],"건축학전공(4년제)","건축대학"],["자동차공학과",[6,2,1,3],"","자동차모빌리티대학"],["자동차IT융합학과",[5,1],"","자동차모빌리티대학"],["미래모빌리티학과",[6],"","자동차모빌리티대학"],["인문기술융합학부",[0,5],"미래융합전공(Ⅱ)","미래융합대학"],["공간디자인학과",[2,1],"","조형대학"],["자동차·운송디자인학과",[1],"","조형대학"],["음악학부",[3],"성악전공","예술대학"],["음악학부",[2],"피아노전공","예술대학"],["음악학부",[1,1],"관현악전공(공통: Violin·Contra Bass·Flute·Clarinet·Bassoon·Bass Trombone·Tenor Trombone)","예술대학"],["음악학부",[1],"작곡전공","예술대학"],["공연예술학부",[2],"연극전공","예술대학"],["공연예술학부",[1],"영화전공","예술대학"],["공연예술학부",[1,1],"무용전공(공통: 발레·한국무용·현대무용)","예술대학"],["스포츠교육학과",[1],"","체육대학"]]},
     "g": {
       "name": "가천대학교",
@@ -3606,6 +3619,7 @@
     }
   },
   "methods": {
+    "ew":[["일반편입학","전 모집단위(약학전공 제외)","1단계: 필답고사 100% (7배수) / 2단계: 1단계 성적 60% + 서류평가 40%","서류평가: 전적대학 성적·전공적합성·발전가능성 등 종합평가. 오전 — 영어: 인문과학대학·사회과학대학·경영대학·신산업융합대학·사범대학(과학교육과·수학교육과 제외)·간호대학. 국제학부: 영어(영어 에세이 포함). 오후 — 수학: 수학과·통계학과·공과대학(화공신소재공학과 제외)·과학교육과(물리교육·지구과학교육)·수학교육과·인공지능대학. 물리: 물리학과. 화학: 화학·나노과학과, 화공신소재공학과, 화학교육전공. 생명과학(생물): 생명과학과, 생물교육전공. 국제학부는 공인어학성적표(TOEFL iBT, TOEIC, TEPS, IELTS) 제출.","7, 9"],["일반편입학","약학부 약학전공","일괄합산: 전적대학 성적 40% + 공인어학성적 20% + 서류평가 40%","필답고사 없음. 공인어학성적은 TOEFL(iBT)·TOEIC·TEPS 중 하나. 서류평가는 전공적합성·발전가능성 등을 종합평가.","8~9"],["학사편입학","전 모집단위(약학전공 제외)","1단계: 필답고사 100% (7배수) / 2단계: 1단계 성적 60% + 서류평가 40%","서류평가: 전적대학 성적·전공적합성·발전가능성 등 종합평가. 오전 — 영어: 인문과학대학·사회과학대학·경영대학·신산업융합대학·사범대학(과학교육과·수학교육과 제외)·간호대학. 국제학부: 영어(영어 에세이 포함). 오후 — 수학: 수학과·통계학과·공과대학(화공신소재공학과 제외)·과학교육과(물리교육·지구과학교육)·수학교육과·인공지능대학. 물리: 물리학과. 화학: 화학·나노과학과, 화공신소재공학과, 화학교육전공. 생명과학(생물): 생명과학과, 생물교육전공. 국제학부는 공인어학성적표(TOEFL iBT, TOEIC, TEPS, IELTS) 제출.","7, 9"]],
     "km":[["일반편입학","인문계·산림기후환경학과·식품영양학과","1단계: 영어 100% / 2단계: 1단계 성적 70% + 전적대학 성적 30%","일반 1단계 인문 8배수·자연 10배수(고사 과목과 별개로 모집계열 기준). 영어 60분.","10~13"],["일반편입학","자연계(산림기후환경학과·식품영양학과·건축설계전공 제외)","1단계: 영어 50% + 수학 50% / 2단계: 1단계 성적 70% + 전적대학 성적 30%","일반 1단계 인문 8배수·자연 10배수(고사 과목과 별개로 모집계열 기준). 영어·수학 총 90분.","10~13"],["일반편입학","조형대학·건축학부 건축설계전공·공연예술학부 영화전공","전적대학 성적 30% + 면접 70%","작품집 PDF는 원서접수 시 제출하고, 면접에 동일 작품집 지참.","4~5, 10, 15"],["일반편입학","음악학부·공연예술학부(영화전공 제외)","전적대학 성적 30% + 실기 70%","모집전공·악기와 실기 과제는 요강 참조.","5, 10~11, 13~14"],["일반편입학","체육대학 스포츠교육학과","전적대학 성적 60% + 면접 40%","기본소양·교과적성 평가.","5, 10, 15"],["학사편입학","인문계·산림기후환경학과·식품영양학과","1단계: 영어 100% / 2단계: 1단계 성적 70% + 전적대학 성적 30%","학사 1단계 15배수. 영어 60분.","10~13"],["학사편입학","자연계(산림기후환경학과·식품영양학과·건축설계전공 제외)","1단계: 영어 50% + 수학 50% / 2단계: 1단계 성적 70% + 전적대학 성적 30%","학사 1단계 15배수. 영어·수학 총 90분.","10~13"],["학사편입학","조형대학","전적대학 성적 30% + 면접 70%","작품집 PDF는 원서접수 시 제출하고, 면접에 동일 작품집 지참.","4~5, 10, 15"],["학사편입학","음악학부 관현악전공·공연예술학부 무용전공","전적대학 성적 30% + 실기 70%","모집전공·악기와 실기 과제는 요강 참조.","5, 10~11, 13~14"],["농어촌학생편입학","인문계","영어 70% + 전적대학 성적 30%","일괄합산 · 영어 60분.","10~13"],["농어촌학생편입학","자연계(건축설계전공 제외)","영어 35% + 수학 35% + 전적대학 성적 30%","일괄합산 · 영어·수학 총 90분.","10~13"],["농어촌학생편입학","건축학부 건축설계전공","전적대학 성적 30% + 면접 70%","작품집 PDF는 원서접수 시 제출하고, 면접에 동일 작품집 지참.","4, 10, 15"],["기회균형편입학","공과대학·자동차모빌리티대학","영어 35% + 수학 35% + 전적대학 성적 30%","일괄합산 · 영어·수학 총 90분.","10~13"],["특성화고 등을 졸업한 재직자 편입학","기업융합법학과(야)·기업경영전공(야)·회계세무학과(야)","전적대학 성적 60% + 면접 40%","일괄합산 · 기본소양·교과적성 평가.","4, 10, 15"],["군위탁편입학","기업융합법학과(야)·기업경영전공(야)·회계세무학과(야)","전적대학 성적 60% + 면접 40%","일괄합산 · 기본소양·교과적성 평가.","4, 10, 15"],["공무원위탁편입학","기업융합법학과(야)·기업경영전공(야)·회계세무학과(야)","전적대학 성적 60% + 면접 40%","일괄합산 · 기본소양·교과적성 평가.","4, 10, 15"]],
     "g": [
       [
@@ -4614,7 +4628,17 @@
     ["km",4,"2027-01-08","14:00 예정","일반·학사 인문·자연계(건축설계전공 제외). 입학안내 홈페이지 발표, 개별 통보 없음.","6"],
     ["km",6,"2027-01-08","14:00","공통·자격서류 PDF 온라인 제출 시작. 일반·학사는 인문·자연계 1단계 합격자와 예·체능계 및 건축설계전공 전체 지원자, 그 외 전형은 전체 지원자 대상. 자격서류는 해당자만 제출.","6, 16~18"],
     ["km",7,"2027-01-13","17:00","공통·자격서류 PDF 업로드 마감. 마감 이후 입력·수정 불가. 최종합격자는 추후 별도 안내에 따라 원본 제출.","6, 16~18"],
-    ["km",5,"2027-02-10","17:00 예정","입학안내 홈페이지 발표. 최초 등록 2월 10일 17:00~12일 16:00 예정. 충원 발표 1차 2월 13일 10:00, 2차 2월 15일 10:00 예정. 최종 충원 발표 2월 18일 18:00까지, 최종 충원 등록 2월 19일 16:00까지.","6, 24~25"]
+    ["km",5,"2027-02-10","17:00 예정","입학안내 홈페이지 발표. 최초 등록 2월 10일 17:00~12일 16:00 예정. 충원 발표 1차 2월 13일 10:00, 2차 2월 15일 10:00 예정. 최종 충원 발표 2월 18일 18:00까지, 최종 충원 등록 2월 19일 16:00까지.","6, 24~25"],
+    ["ew",0,"2026-12-01","13:00","입학처 홈페이지에서 원서접수 안내를 확인.","5"],
+    ["ew",1,"2026-12-03","17:00","일반·학사편입 원서접수 마감.","5"],
+    ["ew",2,"2026-12-13","08:30~12:30","영어: 인문과학대학·사회과학대학·경영대학·신산업융합대학·사범대학(과학교육과·수학교육과 제외)·간호대학. 국제학부: 영어(영어 에세이 포함). 일반·학사편입 대상(약학전공 제외). 요강상 고사 일정 시간대이며, 상세 입실 시각·고사장은 12월 11일 17:00 예정 공지 확인.","5, 7","오전"],
+    ["ew",2,"2026-12-13","14:00~18:00","수학: 수학과·통계학과·공과대학(화공신소재공학과 제외)·과학교육과(물리교육·지구과학교육)·수학교육과·인공지능대학. 물리: 물리학과. 화학: 화학·나노과학과, 화공신소재공학과, 화학교육전공. 생명과학(생물): 생명과학과, 생물교육전공. 일반·학사편입 대상(약학전공 제외). 상세 입실 시각·고사장은 12월 11일 17:00 예정 공지 확인.","5, 7","오후"],
+    ["ew",4,"2026-12-18","17:00 예정","필답고사 1단계 합격자 발표. 입학처 홈페이지 공지, 개별 안내 없음. 약학전공 제외.","5"],
+    ["ew",6,"2026-12-21","13:00","성적·학업계획서 입력과 증빙서류 PDF 업로드 시작. 필답고사 1단계 합격자 및 약학전공 지원자 전체 대상.","5, 9~10"],
+    ["ew",7,"2026-12-23","13:00","입력 및 온라인 서류 업로드 마감. 필답고사 1단계 합격자 및 약학전공 지원자 전체 대상.","5, 9~10"],
+    ["ew",5,"2027-02-04","17:00 예정","일반·학사편입 최종 합격자 발표(약학 포함). 최초 등록: 2월 10~12일, 매일 09:00~16:00. 미등록 충원 발표: 2월 18일 18:00까지. 최종 등록자는 원본 서류 우편 제출.","5, 10, 12"],
+    ["ew",7,"2027-02-19","","최종등록자 원본 서류 우편 제출: 국내 발송은 2월 19일 소인까지 유효.","5, 10","국내 발송 원본"],
+    ["ew",7,"2027-02-22","","최종등록자 원본 서류 우편 제출: 해외 발송은 2월 22일 도착분까지 유효.","5, 10","해외 발송 원본"]
   ]
 }
 </script>
@@ -4654,7 +4678,8 @@ function calendarEventText(e){
  return `<span class="event-line" aria-hidden="true"><span class="event-full">${apply?'원서접수':'서류제출'}</span><span class="event-compact">${apply?'원서':'서류'}</span><span class="event-mark ${phase}">${phase==='start'?'시작':'마감'}</span></span>`;
 }
 function renderCal(){
- const mode=$('view').value,all=mode==='allList',list=filtered(),shown=all?list:list.filter(e=>e.date.startsWith(monthId()));
+ const mode=$('view').value,all=mode==='allList',list=filtered().filter(e=>!(e.school==='ew'&&e.type===7&&(e.date==='2027-02-19'||e.date==='2027-02-22')));
+ const shown=all?list:list.filter(e=>e.date.startsWith(monthId()));
  $('monthButtons').hidden=all;$('calendarHelpMobile').hidden=mode!=='calendar';$('calHeading').textContent=all?'전체 일정':`${year}년 ${month}월`;
  const cards=mode==='calendar'?calendarGroups(shown):[];
  if(mode==='calendar'){
@@ -4669,7 +4694,7 @@ function renderCal(){
    }if(i%7===6)cells+='</tr>';
   }
   $('calBody').innerHTML=`<div class="scroll calendar-scroll"><table class="cal" aria-label="${year}년 ${month}월 달력"><thead><tr>${weeks.map(d=>`<th scope="col">${d}</th>`).join('')}</tr></thead><tbody>${cells}</tbody></table></div>`;
- }else $('calBody').innerHTML=`<ul class="agenda">${shown.map(e=>`<li><p><strong>${esc(fullDate(e.date))} ${esc(e.time)}</strong></p><p><span class="badge ${esc(e.school)}">${esc(S[e.school].short)}</span><strong>${esc(label(e))}</strong></p><p>${esc(e.note)}</p><p class="small">${esc(source(e))}</p></li>`).join('')}</ul>`;
+ }else $('calBody').innerHTML=`<ul class="agenda">${shown.map(e=>`<li><p><strong>${esc(fullDate(e.date))} ${esc(e.time)}</strong></p><p><span class="badge" data-type="${e.type}">${esc(S[e.school].short)}</span><strong>${esc(label(e))}</strong></p><p>${esc(e.note)}</p><p class="small">${esc(source(e))}</p></li>`).join('')}</ul>`;
  $('calNote').textContent=$('calType').value==='4'&&!list.length?'선택한 범위의 반영 모집요강에는 별도 1단계 합격자 발표일이 명시되어 있지 않습니다.':(shown.length?(mode==='calendar'?`달력에 표시된 일정 ${cards.length}건 · 일정을 누르면 세부 시간과 안내를 볼 수 있습니다.`:`표시 일정 ${shown.length}건 · 시각은 한국시간 기준이며, 미기재 시 시각을 표시하지 않습니다.`):'표시할 일정이 없습니다. 다른 달 또는 필터를 선택하세요.');
 }
 function jump(delta){const d=new Date(year,month-1+delta,1);year=d.getFullYear();month=d.getMonth()+1;renderCal()}
@@ -4694,9 +4719,11 @@ function renderQuota(){
  if(!s){$('quotaBody').replaceChildren();$('quotaStatus').textContent='모집인원을 확인할 대학을 선택하세요.';return;}
  const groups=s.tracks.map((t,i)=>{
   if(track&&t!==track)return '';
-  const rows=s.rows.filter(([u,n,maj])=>n[i]&&(!q||norm(u).includes(q)||norm(maj).includes(q)));if(!rows.length)return '';hits+=rows.length;
-  const title=esc(t)+(s.totals[i]!=null?` · 요강 전체 ${esc(s.totals[i])}명`:'');
-  return `<div class="scroll quota" tabindex="0" aria-label="${esc(s.name+' '+t)}"><table><caption>${title}</caption><thead><tr><th scope="col">모집단위</th><th scope="col" class="qty">모집인원</th><th scope="col">세부전공·비고</th></tr></thead><tbody>${rows.map(([u,n,maj,note])=>`<tr><th scope="row">${esc(u)}</th><td class="qty">${esc(n[i])}${typeof n[i]==='number'?'명':''}</td><td>${esc([maj,note].filter(Boolean).join(' / ')||'—')}</td></tr>`).join('')}</tbody></table></div>`;
+   const rows=s.rows.filter(([u,n,maj])=>n[i]&&(!q||norm(u).includes(q)||norm(maj).includes(q)));if(!rows.length)return '';hits+=rows.length;
+   const caps=s.quotaCaps?.[i];
+   const title=esc(t)+(s.totals[i]!=null?` · 요강 전체 ${esc(s.totals[i])}명`:'');
+   const summary=caps?`<p class="quota-caps">계열별 선발: ${Object.entries(caps).map(([g,n])=>`${esc(g)} ${esc(n)}명`).join(' · ')}</p>`:'';
+   return `<div class="scroll quota quota-table" tabindex="0" aria-label="${esc(s.name+' '+t)}"><table><caption>${title}${summary}</caption><colgroup><col><col><col><col></colgroup><thead><tr><th scope="col">모집단위</th><th scope="col">세부전공</th><th scope="col" class="qty">${caps?'최대인원':'모집인원'}</th><th scope="col">비고</th></tr></thead><tbody>${rows.map(([u,n,maj,note,group])=>{const shared=(s.short==='한국항공대'||s.short==='항공대'||s.short==='서울대')&&maj?.includes(' · ');const remarks=[shared?'모집단위 통합 선발':'',caps&&group?group+'계열':'',note].filter(Boolean).join(' · ');return `<tr><th scope="row">${esc(u)}</th><td>${esc(maj||'—')}</td><td class="qty">${esc(n[i])}${typeof n[i]==='number'?'명':''}</td><td class="quota-note">${esc(remarks||'—')}</td></tr>`}).join('')}</tbody></table></div>`;
  }).join('');
  $('quotaBody').innerHTML=groups?`<section class="quota"><h3>${esc(s.name)}</h3><p class="notice">${esc(s.quotaNote)}</p>${groups}<p class="small">근거: ${esc(s.file)} · ${esc(s.quotaRef)}</p></section>`:'';
  $('quotaStatus').textContent=hits?`전형별 모집단위 결과 ${hits}건 · 제목의 ‘요강 전체’ 인원은 해당 대학·전형 전체 기준입니다.`:'검색 결과가 없습니다. 대학·전형을 변경하거나 학과명의 일부를 입력해 보세요.';
